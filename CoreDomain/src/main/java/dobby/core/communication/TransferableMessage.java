@@ -27,8 +27,8 @@ public class TransferableMessage implements Message {
     }
 
     @Override
-    public Stakeholder getDestination() {
-        return raw.getDestination();
+    public String getDestinationName() {
+        return raw.getDestinationName();
     }
 
     @Override

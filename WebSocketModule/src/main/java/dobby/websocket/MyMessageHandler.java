@@ -2,7 +2,6 @@ package dobby.websocket;
 
 import dobby.auth.TokenSolver;
 import dobby.auth.token.Token;
-import dobby.core.communication.Message;
 import dobby.core.communication.ParsedMessage;
 import dobby.core.communication.RawMessage;
 import dobby.core.user.User;
