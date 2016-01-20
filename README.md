@@ -1,5 +1,12 @@
 # Dobby server
 
+Open the project using IDEA:
+* File / New / Project from Existing Sources...
+* Choose the directory dobby-frontal-server
+* Click on "Import project from external model" then Maven and Next
+* Choose "Search for projects recursively"
+* Choose "Import Maven projects automatically"
+
 What is Dobby ? Dobby is an intermediate server who simplify communications between clients using websockets and our apps.
 
 The main purpose is to hide some troubles to the apps by providing an environment which is predictable. Indeed, we've already experienced some difficulties running properly a game with raw websockets. By this dedicated software, we want to follow the UNIX Philosophy "do one thing and do it well". This software will provide a steadiest environment to our game and will be designed to be a plateform that can accomodate several games.
