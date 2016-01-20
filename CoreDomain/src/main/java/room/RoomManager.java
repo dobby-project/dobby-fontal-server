@@ -1,4 +1,4 @@
-package dobby.core.user.room;
+package room;
 
 import dobby.core.exceptions.CannotDestroyMainRoom;
 import dobby.core.user.User;
