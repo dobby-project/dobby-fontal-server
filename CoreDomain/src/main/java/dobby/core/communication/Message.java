@@ -14,11 +14,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Created by gautierc on 20/01/16.
  */
 public class Message {
+    private final static Logger LOGGER = Logger.getLogger(StandardRouter.class.getName());
 
     private final Stakeholder origin;
     private final Stakeholder dest;
@@ -71,6 +73,10 @@ public class Message {
 
         public static Optional<String> parseToken(String str) {
             Optional<Map<String, String>> json = toJson(str);
+
+            if (!json.isPresent())
+                return Optional.empty();
+
             return Optional.ofNullable(json.get().get("token"));
         }
 
@@ -86,7 +92,7 @@ public class Message {
                 JsonParser jp = factory.createParser(json);
                 fields = om.readValue(jp, type);
             } catch (IOException e) {
-                e.printStackTrace();
+                Message.LOGGER.info("Can't read JSON (raw: "+json+"): "+e);
             }
 
             return Optional.ofNullable(fields);

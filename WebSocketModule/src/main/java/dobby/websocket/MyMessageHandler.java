@@ -35,12 +35,12 @@ public class MyMessageHandler implements MessageHandler.Whole<String> {
     }
 
     public void closing() {
-        userRepo.close(user);
+        if (isIdentified()) 
+            userRepo.close(user);
     }
 
     @Override
     public void onMessage(String message) {
-        LOGGER.info("Msg received: "+message);
         if (isIdentified())
         {
             try {
