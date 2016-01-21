@@ -5,11 +5,14 @@ import dobby.core.app.AppRepository;
 import dobby.core.stakeholder.User;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by gautierc on 13/12/15.
  */
 public class UserRepository implements Repository<Object, User> {
+
+    private final static Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
     private final Map<Object, User> entries = Collections.synchronizedMap(new HashMap<>());
     private final List<User> pending = Collections.synchronizedList(new ArrayList<>());
@@ -72,6 +75,7 @@ public class UserRepository implements Repository<Object, User> {
         }
 
         entries.put(user.getSession(), user);
+        LOGGER.info("New user accepted: "+user.getName());
     }
 
     @Override
@@ -83,6 +87,9 @@ public class UserRepository implements Repository<Object, User> {
             user.pending();
             pending.add(user);
             garbageCollection.notify();
+            LOGGER.info("User put in pending: "+user.getName());
+        } else {
+            LOGGER.info("User disconnected: "+user.getName());
         }
     }
 

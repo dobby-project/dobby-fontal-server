@@ -35,7 +35,7 @@ public class MyMessageHandler implements MessageHandler.Whole<String> {
     }
 
     public void closing() {
-        if (isIdentified()) 
+        if (isIdentified())
             userRepo.close(user);
     }
 
