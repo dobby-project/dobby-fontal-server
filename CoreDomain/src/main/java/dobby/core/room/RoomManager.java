@@ -1,7 +1,7 @@
-package room;
+package dobby.core.room;
 
 import dobby.core.exceptions.CannotDestroyMainRoom;
-import dobby.core.user.User;
+import dobby.core.stakeholder.User;
 import dobby.core.exceptions.RoomAndSubRoomsNotEmptyException;
 
 import java.util.Optional;

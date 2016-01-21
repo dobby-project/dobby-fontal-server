@@ -1,28 +1,31 @@
 package dobby.core.communication;
 
-import dobby.core.Repository;
-import dobby.core.Stakeholder;
+import dobby.core.stakeholder.Stakeholder;
 
-import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by gautierc on 19/01/16.
  */
 public class StandardRouter implements Router {
+    private final static Logger LOGGER = Logger.getLogger(StandardRouter.class.getName());
+
     @Override
-    public void transfer(Message msg) {
+    public void accept(Message msg) {
 
-        Stakeholder origin = msg.getOrigin();
+        // Log
+        LOGGER.log(Level.FINE,
+                "Received msg from {0}, to {1}, raw content: {2}",
+                new Object[]{msg.getOrigin().getName(), msg.getDestination().getName(), msg.getRawContent()}
+        );
 
-        // Check destination connectivity
-        // How to "ask" the right repo (app or internal / user)
-        Repository repo = origin.getOpposedRepository();
-        Optional<Stakeholder> destination = repo.getItemByName(msg.getDestinationName());
+        System.out.println(msg.getFields().toString());
 
         // What if the user is in pending ??
 
         // Check authorisation from origin to speak to dest
-        // TODO: RightChecker.isAllowedToCommunicate(origin, );
+        // TODO: RightChecker.isAllowedToCommunicate(origin, dest);
 
         // Ask "Dest" Stakeholder
     }
@@ -30,5 +33,10 @@ public class StandardRouter implements Router {
     @Override
     public void notify(Stakeholder stakeholder) {
 
+    }
+
+    @Override
+    public void logError(Exception e) {
+        LOGGER.warning(e.getMessage());
     }
 }

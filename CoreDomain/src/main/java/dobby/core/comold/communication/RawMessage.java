@@ -1,7 +1,6 @@
-package dobby.core.communication;
+package dobby.core.comold.communication;
 
-import dobby.core.Repository;
-import dobby.core.Stakeholder;
+import dobby.core.stakeholder.Stakeholder;
 
 import java.util.Optional;
 
@@ -10,6 +9,6 @@ import java.util.Optional;
  */
 public interface RawMessage {
     Optional<String> getField(String fieldName);
-    Message resolve(Stakeholder stakeholder);
+    Message resolve(Stakeholder origin);
     String getDestinationName();
 }

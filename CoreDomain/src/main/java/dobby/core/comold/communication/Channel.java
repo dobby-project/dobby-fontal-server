@@ -1,4 +1,4 @@
-package dobby.core.communication;
+package dobby.core.comold.communication;
 
 /**
  * Created by gautierc on 10/12/15.

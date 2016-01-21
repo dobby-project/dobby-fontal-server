@@ -1,10 +1,6 @@
-package dobby.core.communication;
+package dobby.core.comold.communication;
 
-import dobby.core.Stakeholder;
-import dobby.core.communication.Channel;
-import dobby.core.communication.Message;
-import dobby.core.communication.ParsedMessage;
-import dobby.core.user.User;
+import dobby.core.stakeholder.Stakeholder;
 
 import java.util.Optional;
 

@@ -1,8 +1,4 @@
-package dobby.core.user;
-
-import dobby.core.Stakeholder;
-import dobby.core.communication.Message;
-import dobby.core.communication.RawMessage;
+package dobby.core.stakeholder;
 
 /**
  * Created by gautierc on 10/12/15.

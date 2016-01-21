@@ -7,12 +7,14 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import dobby.auth.exception.UnreachableApiException;
 import dobby.auth.token.TokenFactory;
 import javax.ws.rs.core.UriBuilder;
 
 import dobby.auth.token.Token;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.*;
 
 /**
@@ -25,11 +27,12 @@ public class TokenSolver {
         UriBuilder builder = UriBuilder
                 .fromPath("//localhost:3689")
                 .scheme("http")
-                .path("/token/{token}/");
+                .path("/token/{token}");
         String url = builder.build(tokenString).toString();
 
         Client client = Client.create();
         WebResource webResource = client.resource(url);
+
         ClientResponse response = webResource.get(ClientResponse.class);
 
         if (response.getStatus() == 200)
@@ -56,5 +59,27 @@ public class TokenSolver {
             System.out.println("Reponse at "+url.toString()+" give HTTP status "+response.getStatus()+" (expected 200)");
             return Optional.empty();
         }
+    }
+
+    public static String tickle() throws UnreachableApiException {
+        UriBuilder builder = UriBuilder
+                .fromPath("//localhost:3689")
+                .scheme("http")
+                .path("/");
+        String url = builder.build().toString();
+
+        Client client = Client.create();
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response;
+        try {
+            response = webResource.get(ClientResponse.class);
+            if (response.getStatus() == 200)
+                return response.getEntity(String.class);
+        } catch (Exception e) {
+            throw new UnreachableApiException(e.getMessage());
+        }
+
+        throw new UnreachableApiException("Getting a non-200 HTTP-status.");
     }
 }

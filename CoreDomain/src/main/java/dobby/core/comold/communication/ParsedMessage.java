@@ -1,7 +1,6 @@
-package dobby.core.communication;
+package dobby.core.comold.communication;
 
-import dobby.core.Repository;
-import dobby.core.Stakeholder;
+import dobby.core.stakeholder.Stakeholder;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -11,10 +10,12 @@ import java.util.Optional;
  */
 public class ParsedMessage implements RawMessage {
 
+    private boolean forInternal;
     private String destName;
     private HashMap<String, String> fields;
 
-    private ParsedMessage(String destName, HashMap<String, String> fields) {
+    private ParsedMessage(boolean forInternal, String destName, HashMap<String, String> fields) {
+        this.forInternal = forInternal;
         this.destName = destName;
         this.fields = fields;
     }
@@ -25,8 +26,11 @@ public class ParsedMessage implements RawMessage {
     }
 
     @Override
-    public Message resolve(Stakeholder stakeholder) {
-        return stakeholder.receive(this);
+    public Message resolve(Stakeholder origin) {
+        if (forInternal)
+            origin.handleInternalMessage(this);
+
+        return origin.handleMessage(this);
     }
 
     @Override
@@ -45,7 +49,7 @@ public class ParsedMessage implements RawMessage {
 
         private static ParsedMessage parse(String str) {
             HashMap<String, String> fields = new HashMap<>();
-            return new ParsedMessage("", fields);
+            return new ParsedMessage(false, "", fields);
         }
     }
 }

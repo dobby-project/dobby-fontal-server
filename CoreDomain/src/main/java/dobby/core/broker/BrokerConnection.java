@@ -1,6 +1,6 @@
 package dobby.core.broker;
 
-import dobby.core.communication.Message;
+import dobby.core.comold.communication.Message;
 
 /**
  * Created by gautierc on 10/12/15.

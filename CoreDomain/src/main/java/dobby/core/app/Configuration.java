@@ -1,4 +1,4 @@
-package dobby.core.game;
+package dobby.core.app;
 
 /**
  * Created by gautierc on 10/12/15.

@@ -1,6 +1,6 @@
-package room;
+package dobby.core.room;
 
-import dobby.core.user.User;
+import dobby.core.stakeholder.User;
 
 import java.util.List;
 

@@ -3,34 +3,39 @@ package dobby.websocket;
 
 import dobby.auth.token.Token;
 import dobby.core.Repository;
-import dobby.core.communication.Message;
-import dobby.core.communication.RawMessage;
-import dobby.core.communication.TransferableMessage;
-import dobby.core.user.User;
+import dobby.core.comold.communication.InternalMessage;
+import dobby.core.comold.communication.Message;
+import dobby.core.comold.communication.RawMessage;
+import dobby.core.comold.communication.TransferableMessage;
+import dobby.core.stakeholder.Stakeholder;
+import dobby.core.stakeholder.User;
+import dobby.core.user.UserRepository;
 
 import javax.websocket.Session;
 import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Created by gautierc on 16/01/16.
  */
 public class WebSocketUser implements User<Session> {
 
-    //private static final Repository appRepo = StandardAppRepository.getInstance();
-
+    private UserRepository userRepo;
     private Token token;
     private Session session;
     private Date pendingTime;
     private boolean hasQuit;
 
-    public WebSocketUser(Token token, Session session) {
+    public WebSocketUser(UserRepository userRepo, Token token, Session session) {
+        this.userRepo = userRepo;
         this.token = token;
         this.session = session;
         this.hasQuit = false;
     }
 
     /**
-     * Proper deconnection of the user (at reception of the intention of closing by the client or timeLimit reached)
+     * Proper disconnection of the user (at reception of the intention of closing by the client or timeLimit reached)
      */
     @Override
     public void logout() {
@@ -49,8 +54,13 @@ public class WebSocketUser implements User<Session> {
     }
 
     @Override
-    public Message receive(RawMessage msg) {
+    public Message handleMessage(RawMessage msg) {
         return new TransferableMessage(this, msg);
+    }
+
+    @Override
+    public InternalMessage handleInternalMessage(RawMessage msg) {
+        return new InternalMessage(this, msg);
     }
 
     @Override
@@ -60,7 +70,13 @@ public class WebSocketUser implements User<Session> {
 
     @Override
     public Repository getOpposedRepository() {
-        return null;
+        return userRepo.getAppRepository();
+    }
+
+    @Override
+    public Optional<Stakeholder> resolveDest(String name) {
+        UUID uuid = UUID.fromString(name);
+        return getOpposedRepository().getItemByKey(uuid);
     }
 
     @Override
