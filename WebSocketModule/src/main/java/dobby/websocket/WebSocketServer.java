@@ -20,7 +20,7 @@ public class WebSocketServer {
     private String path;
 
     public WebSocketServer(String host, int port, String path) {
-        server = new Server(host, port, path, MyEndPoint.class);
+        server = new Server(host, port, path, null, MyEndPoint.class);
         this.host = host;
         this.port = port;
         this.path = path;
