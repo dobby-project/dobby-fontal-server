@@ -1,4 +1,4 @@
-package dobby.auth;
+package dobby.core.user;
 
 /**
  * Created by gautierc on 19/12/15.

@@ -1,6 +1,6 @@
 package dobby.auth;
 
-import dobby.auth.token.Token;
+import dobby.core.user.Token;
 import org.junit.Test;
 
 import java.util.Optional;

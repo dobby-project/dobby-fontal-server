@@ -1,7 +1,7 @@
 package dobby.websocket;
 
 
-import dobby.auth.token.Token;
+import dobby.core.user.Token;
 import dobby.core.Repository;
 import dobby.core.comold.communication.InternalMessage;
 import dobby.core.comold.communication.Message;
@@ -21,6 +21,7 @@ import java.util.UUID;
  */
 public class WebSocketUser implements User<Session> {
 
+    // TODO: User×Session identifier
     private UserRepository userRepo;
     private Token token;
     private Session session;
@@ -100,7 +101,8 @@ public class WebSocketUser implements User<Session> {
         return this.pendingTime.getTime();
     }
 
-    public boolean equals(WebSocketUser u) {
-        return (token.equals(u.token));
+    @Override
+    public Token getToken() {
+        return token;
     }
 }

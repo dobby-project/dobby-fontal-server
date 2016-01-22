@@ -1,5 +1,6 @@
 package dobby.websocket;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,10 +22,21 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/ws")
 public class MyEndPoint {
 
-
+    private static final int MAX_CONNEXION = 1000;
     private static final List<Session> list = Collections.synchronizedList(new ArrayList<>());
     @OnOpen
     public void open(Session session) {
+        if (list.size() > MAX_CONNEXION) {
+            Logger.getLogger(MyEndPoint.class.getName()).warning("Number of active session reached.");
+            try {
+                session.getBasicRemote().sendText("{\"error\": \"Too many connection on server.\"}");
+                session.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
         try {
             session.addMessageHandler(new MyMessageHandler(session));
         } catch (Exception e) {

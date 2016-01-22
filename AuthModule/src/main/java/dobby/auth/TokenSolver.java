@@ -11,10 +11,9 @@ import dobby.auth.exception.UnreachableApiException;
 import dobby.auth.token.TokenFactory;
 import javax.ws.rs.core.UriBuilder;
 
-import dobby.auth.token.Token;
+import dobby.core.user.Token;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.*;
 
 /**
@@ -56,7 +55,7 @@ public class TokenSolver {
         }
         else
         {
-            System.out.println("Reponse at "+url.toString()+" give HTTP status "+response.getStatus()+" (expected 200)");
+            System.out.println("Response at "+url.toString()+" give HTTP status "+response.getStatus()+" (expected 200)");
             return Optional.empty();
         }
     }

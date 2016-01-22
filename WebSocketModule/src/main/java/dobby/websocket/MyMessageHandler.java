@@ -1,7 +1,7 @@
 package dobby.websocket;
 
 import dobby.auth.TokenSolver;
-import dobby.auth.token.Token;
+import dobby.core.user.Token;
 import dobby.core.communication.Message;
 import dobby.core.communication.Router;
 import dobby.core.communication.StandardRouter;

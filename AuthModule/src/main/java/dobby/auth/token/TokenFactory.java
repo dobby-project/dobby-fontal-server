@@ -1,6 +1,7 @@
 package dobby.auth.token;
 
-import dobby.auth.Kind;
+import dobby.core.user.Kind;
+import dobby.core.user.Token;
 
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +15,7 @@ public class TokenFactory {
         if (map.containsKey("kind") && map.containsKey("username"))
         {
             Kind kind = Kind.valueOf(map.get("kind").toUpperCase());
-            return Optional.of(new ValidToken(map.get("username"), kind));
+            return Optional.of(new AuthToken(map.get("username"), kind));
         }
 
         return Optional.empty();

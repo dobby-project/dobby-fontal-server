@@ -5,6 +5,7 @@ import dobby.core.app.AppRepository;
 import dobby.core.stakeholder.User;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 /**
@@ -14,9 +15,13 @@ public class UserRepository implements Repository<Object, User> {
 
     private final static Logger LOGGER = Logger.getLogger(UserRepository.class.getName());
 
+    private final static int PENDING_MINUTES = 2;
+    private final static int MAX_PENDING_USR = 20;
+    private final static int GC_CYCLE_MS = 1000;
+
     private final Map<Object, User> entries = Collections.synchronizedMap(new HashMap<>());
-    private final List<User> pending = Collections.synchronizedList(new ArrayList<>());
-    private static final int PENDING_MINUTES = 2;
+    private final Queue<User> pending = new ConcurrentLinkedQueue<>();
+
     private Thread garbageCollection;
     private AppRepository appRepo;
 
@@ -39,7 +44,7 @@ public class UserRepository implements Repository<Object, User> {
 
                     // Freshly notified (or new iteration), we wait 1s before doing anything
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(GC_CYCLE_MS);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -47,8 +52,7 @@ public class UserRepository implements Repository<Object, User> {
                     // Looking for some old user to remove
                     long timeLimit = new Date(new Date().getTime() - (PENDING_MINUTES * 60000)).getTime();
                     pending.stream().filter(user -> user.getPendingTime() < timeLimit).forEach(user -> {
-                        user.logout();
-                        pending.remove(user);
+                        removeFromPending(user);
                     });
                 }
             }
@@ -72,10 +76,12 @@ public class UserRepository implements Repository<Object, User> {
             pending.remove(pendingUser.get());
             pendingUser.get().restore(user);
             user = pendingUser.get();
+            LOGGER.info("User restored from pending: "+user.getName());
+        } else {
+            LOGGER.info("New user accepted: "+user.getName());
         }
 
         entries.put(user.getSession(), user);
-        LOGGER.info("New user accepted: "+user.getName());
     }
 
     @Override
@@ -86,7 +92,11 @@ public class UserRepository implements Repository<Object, User> {
         {
             user.pending();
             pending.add(user);
-            garbageCollection.notify();
+            if (pending.size() > MAX_PENDING_USR)
+                throwOldestPendingUser();
+            synchronized (garbageCollection) {
+                garbageCollection.notify();
+            }
             LOGGER.info("User put in pending: "+user.getName());
         } else {
             LOGGER.info("User disconnected: "+user.getName());
@@ -94,7 +104,7 @@ public class UserRepository implements Repository<Object, User> {
     }
 
     private Optional<User> getPendingUser(User newUser) {
-        return pending.stream().filter(u -> u.equals(newUser)).findFirst();
+        return pending.stream().filter(u -> u.getToken().equals(newUser.getToken())).findFirst();
     }
 
     @Override
@@ -111,5 +121,15 @@ public class UserRepository implements Repository<Object, User> {
             item = pending.stream().filter(u -> u.getName() == name).findFirst();
 
         return item;
+    }
+
+    private void throwOldestPendingUser() {
+        removeFromPending(pending.remove());
+    }
+
+    private void removeFromPending(User user) {
+        user.logout();
+        pending.remove(user);
+        LOGGER.info("User log-out and unset: "+user.getName());
     }
 }
