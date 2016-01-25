@@ -130,6 +130,7 @@ public class UserRepository implements Repository<Object, User> {
     private void removeFromPending(User user) {
         user.logout();
         pending.remove(user);
+        router.
         LOGGER.info("User log-out and unset: "+user.getName());
     }
 }
