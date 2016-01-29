@@ -32,8 +32,8 @@ public class Main {
             LOGGER.warning("Auth API is unreachable: "+e.getMessage());
         }
 
-        RepositoryFactory repos = new RepositoryFactory();
         Router router = new StandardRouter();
+        RepositoryFactory repos = new RepositoryFactory(router);
 
         // We "inject" the repo to the message handler
         MyMessageHandler.userRepo = repos.getUserRepo();

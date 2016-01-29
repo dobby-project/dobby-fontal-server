@@ -1,6 +1,7 @@
 package dobby.core.app;
 
 import dobby.core.Repository;
+import dobby.core.communication.Router;
 import dobby.core.stakeholder.App;
 import dobby.core.user.UserRepository;
 
@@ -13,14 +14,16 @@ import java.util.*;
 public class AppRepository implements Repository<UUID, App> {
 
     private UserRepository userRepo;
+    private Router router;
     private List<App> apps;
 
-    public AppRepository() {
+    public AppRepository(Router router) {
+        this.router = router;
         apps = Collections.synchronizedList(new ArrayList<App>());
     }
 
-    public AppRepository(List<App> availableApps) {
-        this();
+    public AppRepository(List<App> availableApps, Router router) {
+        this(router);
         for (App app : availableApps)
             accept(app);
     }
@@ -52,6 +55,7 @@ public class AppRepository implements Repository<UUID, App> {
 
     @Override
     public void close(App app) {
+        router.appHasLeft(app);
         if (exists(app))
             apps.remove(app);
     }

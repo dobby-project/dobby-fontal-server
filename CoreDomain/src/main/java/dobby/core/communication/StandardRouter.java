@@ -1,6 +1,8 @@
 package dobby.core.communication;
 
+import dobby.core.stakeholder.App;
 import dobby.core.stakeholder.Stakeholder;
+import dobby.core.stakeholder.User;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,5 +40,16 @@ public class StandardRouter implements Router {
     @Override
     public void logError(Exception e) {
         LOGGER.warning(e.getMessage());
+    }
+
+    @Override
+    public void userHasLeft(User user) {
+        // Emptying queue
+        // Tell broker message isn't sent...
+    }
+
+    @Override
+    public void appHasLeft(App app) {
+        // Tell users that app is dead
     }
 }

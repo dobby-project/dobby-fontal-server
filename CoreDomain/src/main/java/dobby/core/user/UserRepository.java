@@ -2,6 +2,7 @@ package dobby.core.user;
 
 import dobby.core.Repository;
 import dobby.core.app.AppRepository;
+import dobby.core.communication.Router;
 import dobby.core.stakeholder.User;
 
 import java.util.*;
@@ -24,8 +25,11 @@ public class UserRepository implements Repository<Object, User> {
 
     private Thread garbageCollection;
     private AppRepository appRepo;
+    private Router router;
 
-    public UserRepository() {
+    public UserRepository(Router router) {
+        this.router = router;
+
         garbageCollection = new Thread() {
             public void run() {
                 while (true)
@@ -70,6 +74,14 @@ public class UserRepository implements Repository<Object, User> {
 
     @Override
     public void accept(User user) {
+
+        Optional<User> currentUser = getCurrentUser(user);
+        if (currentUser.isPresent()) {
+            LOGGER.info("User "+user.getName()+" is trying to connect more than one instance.");
+            conciliate(currentUser.get(), user);
+            return;
+        }
+
         // We will try to restore the previous User (if we had one) => only one connection to the front (depend on token implem)!!
         Optional<User> pendingUser = getPendingUser(user);
         if (pendingUser.isPresent()) {
@@ -82,6 +94,17 @@ public class UserRepository implements Repository<Object, User> {
         }
 
         entries.put(user.getSession(), user);
+    }
+
+    /**
+     * In case of two connections of the same user, we conciliate the situation by "removing" the old:
+     * we put the new WebSocket-session one the old and we "forget" the incoming context.
+     * @param alreadyPresent
+     * @param incoming
+     */
+    private void conciliate(User alreadyPresent, User incoming) {
+        alreadyPresent.logout();
+        alreadyPresent.restore(incoming);
     }
 
     @Override
@@ -104,6 +127,10 @@ public class UserRepository implements Repository<Object, User> {
     }
 
     private Optional<User> getPendingUser(User newUser) {
+        return pending.stream().filter(u -> u.getToken().equals(newUser.getToken())).findFirst();
+    }
+
+    private Optional<User> getCurrentUser(User newUser) {
         return pending.stream().filter(u -> u.getToken().equals(newUser.getToken())).findFirst();
     }
 
@@ -130,7 +157,7 @@ public class UserRepository implements Repository<Object, User> {
     private void removeFromPending(User user) {
         user.logout();
         pending.remove(user);
-        router.
+        router.userHasLeft(user);
         LOGGER.info("User log-out and unset: "+user.getName());
     }
 }
